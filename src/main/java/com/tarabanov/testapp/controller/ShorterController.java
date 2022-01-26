@@ -3,15 +3,18 @@ package com.tarabanov.testapp.controller;
 import com.tarabanov.testapp.model.Shorter;
 import com.tarabanov.testapp.repository.ShorterRepository;
 import com.tarabanov.testapp.util.CodeGenerator;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -40,25 +43,44 @@ public class ShorterController {
         // и вернуть его
 
         String hash = codeGenerator.generate(shorterLength);
-        if (shorter != null) {
+        if (Objects.nonNull(shorter) && StringUtils.isNotEmpty(shorter.getOriginalUrl())) {
             String shorterString = URLDecoder.decode(shorter.getOriginalUrl());
             shorter = new Shorter(null, hash, shorterString, ZonedDateTime.now());
-            return repository.save(shorter);
+            return repository .save(shorter);
         } else {
             return null;
         }
     }
 
+    @Transactional
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        repository.deleteShorterById(id);
+        return ResponseEntity.ok().build();
+    }
+
     // при переходе на нашу короткую ссылку мы должны перенаправлять пользователя на оригинальную ссылку
     @GetMapping("/{hash}")
-    public ResponseEntity redirectShorter(@PathVariable("hash") String hash) {
+    public ResponseEntity<String> redirectShorter(@PathVariable("hash") String hash) {
         // найти хэш в БД и перенаправить на исходный URL
         Shorter shorter = repository.findByHash(hash);
-        if (shorter != null) {
+        if (Objects.nonNull(shorter)) {
             //если мы нашли код, то делаем редирект на ссылку
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Location", shorter.getOriginalUrl());
-            return new ResponseEntity<String>(headers, HttpStatus.FOUND);
+            headers.add(HttpHeaders.LOCATION, shorter.getOriginalUrl());
+//            shorter.setCount(shorter.getCount());
+            Long count = shorter.getCount();
+            if (count != null) {
+                count++;
+                shorter.setCount(count);
+                System.out.println(count);
+                repository.save(shorter);
+            } else {
+                shorter.setCount(1L);
+                repository.save(shorter);
+            }
+
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
         } else {
             //не нашли, выкидываем ошибку не найден 404
             return ResponseEntity.notFound().build();
@@ -66,7 +88,7 @@ public class ShorterController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity getAll() {
+    public ResponseEntity<Iterable<Shorter>> getAll() {
         return ResponseEntity.ok(repository.findAll());
     }
 }

@@ -1,19 +1,16 @@
 package com.tarabanov.testapp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 @Table(schema = "shorter")
 @AllArgsConstructor
 @RequiredArgsConstructor
-@Getter
-@Setter
+@Data
 public class Shorter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +23,13 @@ public class Shorter {
     // По умолчанию используется сгенерированный SQL для создания столбца предполагаемого типа.
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private ZonedDateTime createdAt;
+    @Column(name = "counter")
+    private Long count;
+
+    public Shorter(Long id, String hash, String originalUrl, ZonedDateTime createdAt) {
+        this.id = id;
+        this.hash = hash;
+        this.originalUrl = originalUrl;
+        this.createdAt = createdAt;
+    }
 }
