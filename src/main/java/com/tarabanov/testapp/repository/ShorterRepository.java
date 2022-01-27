@@ -7,10 +7,8 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ShorterRepository extends JpaRepository<Shorter, Long> {
 
-    // метод поиска по hash- коду
     Shorter findByHash(String hash);
 
-    // Shorter
     void deleteShorterById(Long id);
 
 }

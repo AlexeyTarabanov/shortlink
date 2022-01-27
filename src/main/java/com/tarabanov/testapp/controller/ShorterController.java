@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
@@ -21,7 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 
 @RestController
-@RequestMapping
+@RequestMapping("/short-link")
 public class ShorterController {
 
     private final ShorterRepository repository;
@@ -39,14 +41,12 @@ public class ShorterController {
     // сохранение оригинальной ссылки и генерация короткого кода 'hash'
     @PostMapping(path = "/", consumes = APPLICATION_JSON_VALUE)
     public Shorter createShortUrl(@RequestBody Shorter shorter) {
-        // сгенерировать хэш исходного URL
-        // и вернуть его
 
         String hash = codeGenerator.generate(shorterLength);
         if (Objects.nonNull(shorter) && StringUtils.isNotEmpty(shorter.getOriginalUrl())) {
             String shorterString = URLDecoder.decode(shorter.getOriginalUrl());
             shorter = new Shorter(null, hash, shorterString, ZonedDateTime.now());
-            return repository .save(shorter);
+            return repository.save(shorter);
         } else {
             return null;
         }
@@ -59,7 +59,7 @@ public class ShorterController {
         return ResponseEntity.ok().build();
     }
 
-    // при переходе на нашу короткую ссылку мы должны перенаправлять пользователя на оригинальную ссылку
+    // при переходе на нашу короткую ссылку перенаправляет пользователя на оригинальную ссылку
     @GetMapping("/{hash}")
     public ResponseEntity<String> redirectShorter(@PathVariable("hash") String hash) {
         // найти хэш в БД и перенаправить на исходный URL
@@ -68,7 +68,7 @@ public class ShorterController {
             //если мы нашли код, то делаем редирект на ссылку
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.LOCATION, shorter.getOriginalUrl());
-//            shorter.setCount(shorter.getCount());
+
             Long count = shorter.getCount();
             if (count != null) {
                 count++;
