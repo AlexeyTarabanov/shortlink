@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Create short link</title>
+</head>
+<body>
+<!--форма, в которой будем передавать данные-->
+<form action="#" th:action="@{/short-link/}" th:object="${shorter}" method="post">
+    <label for="originalUrl">Original URL</label>
+    <input type="text" th:field="*{originalUrl}" id="originalUrl" placeholder="Original URL">
+    <input type="submit" value="Get Short Link">
+</form>
+</body>
+</html>

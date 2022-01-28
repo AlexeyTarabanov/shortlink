@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Links</title>
+</head>
+<body>
+<div th:switch="${shorts}">
+    <h2 th:case="null">No users found</h2>
+    <div th:case="*">
+        <h2>Links</h2>
+        <h4>Admin Panel</h4>
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Original URL</th>
+                <th>Short URL</th>
+                <th>Number of clicks</th>
+                <th>Time of creation</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="shorter : ${shorts}">
+                <td th:text="${shorter.id}"></td>
+                <td th:text="${shorter.originalUrl}"></td>
+                <td th:text="${shorter.hash}"></td>
+                <td th:text="${shorter.count}"></td>
+                <td th:text="${shorter.createdAt}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p><a href="/short-link/shorter-create">Create link</a></p>
+</div>
+</body>
+</html>

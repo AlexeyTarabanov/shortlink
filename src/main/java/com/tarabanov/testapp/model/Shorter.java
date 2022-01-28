@@ -1,10 +1,11 @@
 package com.tarabanov.testapp.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 @Table(schema = "shorter")

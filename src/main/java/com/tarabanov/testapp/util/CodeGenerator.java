@@ -1,21 +1,17 @@
 package com.tarabanov.testapp.util;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.RandomStringGenerator;
 
+@RequiredArgsConstructor(staticName = "of")
 public class CodeGenerator {
 
-    private RandomStringGenerator randomStringGenerator;
+    private final int length;
 
-    public CodeGenerator() {
-        RandomStringGenerator.Builder builder = new RandomStringGenerator
-                .Builder();
-        builder.filteredBy(c -> isLatinLetterOrDigit(c));
-        this.randomStringGenerator = builder
-                .build();
-    }
-
-    public String generate(int length) {
-        return randomStringGenerator.generate(length);
+    public String generate() {
+        return new RandomStringGenerator.Builder()
+                .filteredBy(CodeGenerator::isLatinLetterOrDigit)
+                .build().generate(length);
     }
 
     private static boolean isLatinLetterOrDigit(int codePoint) {
@@ -25,8 +21,7 @@ public class CodeGenerator {
                 return true;
 
         if ('0' <= codePoint)
-            if (codePoint <= '9')
-                return true;
+            return codePoint <= '9';
 
         return false;
     }
