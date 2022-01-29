@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Short URL</title>
+</head>
+<body>
+<p th:text="'Short link created!'"/>
+<a th:href="@{'/short-link/' + ${shortUrl.getHash()}}"><p th:text="${shortUrl.getHash()}"></p></a>
+</body>
+</html>

@@ -49,7 +49,6 @@ public class ShorterService {
             if (count != null) {
                 count++;
                 shorter.setCount(count);
-                System.out.println(count);
                 shorterRepository.save(shorter);
             } else {
                 shorter.setCount(1L);
@@ -58,16 +57,15 @@ public class ShorterService {
 
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         } else {
-
             return ResponseEntity.notFound().build();
         }
     }
 
     public void deleteById(Long id) {
-        shorterRepository.deleteShorterById(id);
+        shorterRepository.deleteById(id);
     }
 
-    public List<Shorter> getAll() {
+    public List<Shorter> findAll() {
         return shorterRepository.findAll();
     }
 }

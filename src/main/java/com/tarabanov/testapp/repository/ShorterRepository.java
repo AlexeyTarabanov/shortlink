@@ -8,6 +8,4 @@ public interface ShorterRepository extends JpaRepository<Shorter, Long> {
 
     Shorter findByHash(String hash);
 
-    void deleteShorterById(Long id);
-
 }

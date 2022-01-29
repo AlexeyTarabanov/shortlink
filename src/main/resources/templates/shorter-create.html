@@ -5,7 +5,6 @@
     <title>Create short link</title>
 </head>
 <body>
-<!--форма, в которой будем передавать данные-->
 <form action="#" th:action="@{/short-link/}" th:object="${shorter}" method="post">
     <label for="originalUrl">Original URL</label>
     <input type="text" th:field="*{originalUrl}" id="originalUrl" placeholder="Original URL">

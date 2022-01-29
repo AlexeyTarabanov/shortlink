@@ -16,7 +16,7 @@ public class Shorter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(name = "hash")
     private String hash;
     @Column(name = "original_url")
     private String originalUrl;

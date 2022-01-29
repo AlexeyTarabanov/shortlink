@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Links</title>
@@ -24,9 +25,10 @@
             <tr th:each="shorter : ${shorts}">
                 <td th:text="${shorter.id}"></td>
                 <td th:text="${shorter.originalUrl}"></td>
-                <td th:text="${shorter.hash}"></td>
+                <td><a th:href="@{'/short-link/' + ${shorter.getHash()}}"><p th:text="${shorter.getHash()}"></p></a></td>
                 <td th:text="${shorter.count}"></td>
                 <td th:text="${shorter.createdAt}"></td>
+                <td><a th:href="@{link-delete/{id}(id=${shorter.id})}">Delete</a></td>
             </tr>
             </tbody>
         </table>
