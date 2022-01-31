@@ -1,6 +1,7 @@
 package com.tarabanov.testapp.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -8,22 +9,23 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 
 @Entity
-@Table(schema = "shorter")
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Data
+@Builder
+@Table
 public class Shorter {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue()
     private Long id;
-    @Column(name = "hash")
+    @Column()
     private String hash;
-    @Column(name = "original_url")
+    @Column()
     private String originalUrl;
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    @Column()
     private ZonedDateTime createdAt;
-    @Column(name = "counter")
-    private Long count;
+    @Column()
+    private Long count = 0L;
 
     public Shorter(Long id, String hash, String originalUrl, ZonedDateTime createdAt) {
         this.id = id;

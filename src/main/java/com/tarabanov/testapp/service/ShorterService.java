@@ -4,6 +4,7 @@ import com.tarabanov.testapp.model.Shorter;
 import com.tarabanov.testapp.repository.ShorterRepository;
 import com.tarabanov.testapp.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -12,16 +13,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.annotation.PostConstruct;
 import java.net.URLDecoder;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ShorterService {
 
     private final ShorterRepository shorterRepository;
+
+    @PostConstruct
+    void init() {
+        log.debug("init: Adding links to table");
+
+        shorterRepository.save(
+                Shorter.builder()
+                        .hash("1")
+                        .createdAt(ZonedDateTime.now())
+                        .originalUrl("www.google.com")
+                        .count(0L)
+                        .build()
+        );
+        log.debug("#init: link saved");
+    }
 
     @Value("6")
     private Integer shorterLength;
@@ -61,11 +78,12 @@ public class ShorterService {
         }
     }
 
-    public void deleteById(Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
         shorterRepository.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
-    public List<Shorter> findAll() {
-        return shorterRepository.findAll();
+    public ResponseEntity<Iterable<Shorter>> findAll() {
+        return ResponseEntity.ok(shorterRepository.findAll());
     }
 }
