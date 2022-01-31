@@ -4,6 +4,7 @@ import com.tarabanov.testapp.model.Shorter;
 import com.tarabanov.testapp.repository.ShorterRepository;
 import com.tarabanov.testapp.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.annotation.PostConstruct;
 import java.net.URLDecoder;
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -19,9 +21,45 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ShorterService {
 
     private final ShorterRepository shorterRepository;
+
+    @PostConstruct
+    void init() {
+        log.debug("init: Adding links to table");
+
+        shorterRepository.save(
+                Shorter.builder()
+                        .hash("1")
+                        .createdAt(ZonedDateTime.now())
+                        .originalUrl("https://facebook.com")
+                        .count(0L)
+                        .build()
+        );
+        log.debug("#init: link saved");
+
+        shorterRepository.save(
+                Shorter.builder()
+                        .hash("2")
+                        .createdAt(ZonedDateTime.now())
+                        .originalUrl("https://mail.google.com/mail/u/0/")
+                        .count(0L)
+                        .build()
+        );
+        log.debug("#init: link saved");
+
+        shorterRepository.save(
+                Shorter.builder()
+                        .hash("3")
+                        .createdAt(ZonedDateTime.now())
+                        .originalUrl("https://instagram.com")
+                        .count(0L)
+                        .build()
+        );
+        log.debug("#init: link saved");
+    }
 
     @Value("6")
     private Integer shorterLength;
