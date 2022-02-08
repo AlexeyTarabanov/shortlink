@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ShorterService {
 
@@ -61,8 +60,15 @@ public class ShorterService {
         log.debug("#init: link saved");
     }
 
-    @Value("6")
+
     private Integer shorterLength;
+
+    public ShorterService(
+            ShorterRepository shorterRepository,
+            @Value("${generator.length: 6}") Integer shorterLength) {
+        this.shorterRepository = shorterRepository;
+        this.shorterLength = shorterLength;
+    }
 
     public Shorter generateShortUrl(Shorter shorter) {
 
