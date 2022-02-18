@@ -1,7 +1,7 @@
 package com.tarabanov.testapp.controller;
 
-import com.tarabanov.testapp.model.Shorter;
-import com.tarabanov.testapp.service.ShorterService;
+import com.tarabanov.testapp.model.ShortLink;
+import com.tarabanov.testapp.service.ShortLinkService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,39 +17,39 @@ import java.util.List;
 @Controller
 @RequestMapping("/short-link")
 @RequiredArgsConstructor
-public class ShorterController {
+public class ShortLinkController {
 
-    private final ShorterService shorterService;
+    private final ShortLinkService shortLinkService;
 
     @GetMapping("/shorter-create")
-    public String createShorterForm(Shorter shorter) {
+    public String createShorterForm(ShortLink shortLink) {
         return "shorter-create";
     }
 
     // сохранение оригинальной ссылки и генерация короткого кода 'hash'
     @PostMapping(path = "/")
-    public String createShortUrl(Shorter shorter, Model model) {
-        Shorter shortUrl = shorterService.generateShortUrl(shorter);
-        model.addAttribute("shortUrl", shortUrl);
+    public String createShortUrl(ShortLink shortLink, Model model) {
+        ShortLink link = shortLinkService.generateShortUrl(shortLink);
+        model.addAttribute("shortUrl", link);
         return "new-link";
     }
 
     // при переходе на нашу короткую ссылку перенаправляет пользователя на оригинальную ссылку
     @GetMapping("/{hash}")
     public ResponseEntity<String> redirectShorter(@PathVariable("hash") String hash) {
-        return shorterService.redirectShorterUrl(hash);
+        return shortLinkService.redirectShorterUrl(hash);
     }
 
     @GetMapping ("link-delete/{id}")
     public String deleteLink(@PathVariable("id") Long id) {
-        shorterService.deleteById(id);
+        shortLinkService.deleteById(id);
         return "redirect:/short-link/all-link";
     }
 
     @GetMapping("/all-link")
     public String findAll(Model model) {
-        List<Shorter> shorts = shorterService.findAll();
-        model.addAttribute("shorts", shorts);
+        List<ShortLink> links = shortLinkService.findAll();
+        model.addAttribute("shorts", links);
         return "link-list";
     }
 }

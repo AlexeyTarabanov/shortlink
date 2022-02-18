@@ -1,8 +1,8 @@
 package com.tarabanov.testapp;
 
 import com.tarabanov.testapp.util.CodeGenerator;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 

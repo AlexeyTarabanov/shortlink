@@ -1,7 +1,7 @@
 package com.tarabanov.testapp.service;
 
-import com.tarabanov.testapp.model.Shorter;
-import com.tarabanov.testapp.repository.ShorterRepository;
+import com.tarabanov.testapp.model.ShortLink;
+import com.tarabanov.testapp.repository.LinkRepository;
 import com.tarabanov.testapp.util.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,16 +21,18 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class ShorterService {
+@RequiredArgsConstructor
+public class ShortLinkService {
 
-    private final ShorterRepository shorterRepository;
+    private final LinkRepository linkRepository;
+    private final CodeGenerator codeGenerator;
 
     @PostConstruct
     void init() {
         log.debug("init: Adding links to table");
 
-        shorterRepository.save(
-                Shorter.builder()
+        linkRepository.save(
+                ShortLink.builder()
                         .hash("1")
                         .createdAt(ZonedDateTime.now())
                         .originalUrl("https://facebook.com")
@@ -39,8 +41,8 @@ public class ShorterService {
         );
         log.debug("#init: link saved");
 
-        shorterRepository.save(
-                Shorter.builder()
+        linkRepository.save(
+                ShortLink.builder()
                         .hash("2")
                         .createdAt(ZonedDateTime.now())
                         .originalUrl("https://mail.google.com/mail/u/0/")
@@ -49,8 +51,8 @@ public class ShorterService {
         );
         log.debug("#init: link saved");
 
-        shorterRepository.save(
-                Shorter.builder()
+        linkRepository.save(
+                ShortLink.builder()
                         .hash("3")
                         .createdAt(ZonedDateTime.now())
                         .originalUrl("https://instagram.com")
@@ -60,43 +62,34 @@ public class ShorterService {
         log.debug("#init: link saved");
     }
 
+    public ShortLink generateShortUrl(ShortLink shortLink) {
 
-    private Integer shorterLength;
+        String hash = codeGenerator.generate();
 
-    public ShorterService(
-            ShorterRepository shorterRepository,
-            @Value("${generator.length: 6}") Integer shorterLength) {
-        this.shorterRepository = shorterRepository;
-        this.shorterLength = shorterLength;
-    }
-
-    public Shorter generateShortUrl(Shorter shorter) {
-
-        String hash = CodeGenerator.of(shorterLength).generate();
-        if (Objects.nonNull(shorter) && StringUtils.isNotEmpty(shorter.getOriginalUrl())) {
-            String shorterString = URLDecoder.decode(shorter.getOriginalUrl());
-            shorter = new Shorter(null, hash, shorterString, ZonedDateTime.now());
-            return shorterRepository.save(shorter);
+        if (Objects.nonNull(shortLink) && StringUtils.isNotEmpty(shortLink.getOriginalUrl())) {
+            String shorterString = URLDecoder.decode(shortLink.getOriginalUrl());
+            shortLink = new ShortLink(null, hash, shorterString, ZonedDateTime.now());
+            return linkRepository.save(shortLink);
         } else {
             return null;
         }
     }
 
-    public ResponseEntity<String> redirectShorterUrl(@PathVariable("hash") String hash) {
+    public ResponseEntity<String> redirectShorterUrl(String hash) {
 
-        Shorter shorter = shorterRepository.findByHash(hash);
-        if (Objects.nonNull(shorter)) {
+        ShortLink shortLink = linkRepository.findByHash(hash); // вренуть мок с коунт = 0
+        if (Objects.nonNull(shortLink)) {
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.LOCATION, shorter.getOriginalUrl());
+            headers.add(HttpHeaders.LOCATION, shortLink.getOriginalUrl());
 
-            Long count = shorter.getCount();
+            Long count = shortLink.getCount();
             if (count != null) {
                 count++;
-                shorter.setCount(count);
-                shorterRepository.save(shorter);
+                shortLink.setCount(count);
+                linkRepository.save(shortLink);
             } else {
-                shorter.setCount(1L);
-                shorterRepository.save(shorter);
+                shortLink.setCount(1L);
+                linkRepository.save(shortLink);
             }
 
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
@@ -106,10 +99,10 @@ public class ShorterService {
     }
 
     public void deleteById(Long id) {
-        shorterRepository.deleteById(id);
+        linkRepository.deleteById(id);
     }
 
-    public List<Shorter> findAll() {
-        return shorterRepository.findAll();
+    public List<ShortLink> findAll() {
+        return linkRepository.findAll();
     }
 }

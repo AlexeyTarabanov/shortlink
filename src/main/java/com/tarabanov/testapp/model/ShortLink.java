@@ -14,7 +14,7 @@ import java.time.ZonedDateTime;
 @RequiredArgsConstructor
 @Builder
 @Data
-public class Shorter {
+public class ShortLink {
     @Id
     @GeneratedValue()
     private Long id;
@@ -27,7 +27,7 @@ public class Shorter {
     @Column()
     private Long count;
 
-    public Shorter(Long id, String hash, String originalUrl, ZonedDateTime createdAt) {
+    public ShortLink(Long id, String hash, String originalUrl, ZonedDateTime createdAt) {
         this.id = id;
         this.hash = hash;
         this.originalUrl = originalUrl;
